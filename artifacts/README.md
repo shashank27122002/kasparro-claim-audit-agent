@@ -1,0 +1,1 @@
+Live run artifacts are generated here by run_batch.py. Do not fabricate evidence: run v1 development, inspect its errors, run v2 development on identical 40 answers, then freeze code and run both versions on the 10 check answers. Commit the four JSON artifacts and run logs after actual API runs.
