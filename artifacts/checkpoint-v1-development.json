@@ -2,9 +2,9 @@
   "run_id": "ab55a60f-b34d-428a-b754-cda806c7642a",
   "version": "v1",
   "split": "development",
-  "updated_at": "2026-10-19T10:15:50.845549+00:00",
+  "updated_at": "2026-10-21T13:40:58.731854+00:00",
   "total_answers": 40,
-  "completed_count": 12,
+  "completed_count": 14,
   "predictions": [
     {
       "answer_id": "A01",
@@ -901,6 +901,78 @@
             "stonewave.go.water_damage_covered"
           ],
           "explanation": "warranty excludes water damage"
+        }
+      ]
+    },
+    {
+      "answer_id": "A13",
+      "version": "v1",
+      "claims": [
+        {
+          "quote": "StoneWave Go delivers its full 16-hour laboratory battery duration at fifty percent volume",
+          "start_char": 358,
+          "end_char": 448,
+          "label": "supported",
+          "evidence_fact_ids": [
+            "stonewave.go.battery_50_percent"
+          ],
+          "explanation": "matches battery spec"
+        }
+      ]
+    },
+    {
+      "answer_id": "A14",
+      "version": "v1",
+      "claims": [
+        {
+          "quote": "ClearTrail Plus costs INR 2,499 including tax but excluding shipping",
+          "start_char": 1402,
+          "end_char": 1470,
+          "label": "supported",
+          "evidence_fact_ids": [
+            "cleartrail.plus.price_2026"
+          ],
+          "explanation": "price matches catalogue"
+        },
+        {
+          "quote": "the original purchase invoice is still required to claim the standard manufacturer warranty for ClearTrail Plus",
+          "start_char": 1550,
+          "end_char": 1661,
+          "label": "supported",
+          "evidence_fact_ids": [
+            "cleartrail.plus.warranty_invoice_required"
+          ],
+          "explanation": "invoice required per warranty fact"
+        },
+        {
+          "quote": "the USB-C connector on ClearTrail Plus does provide an audio-input path",
+          "start_char": 1701,
+          "end_char": 1772,
+          "label": "supported",
+          "evidence_fact_ids": [
+            "cleartrail.plus.usb_audio"
+          ],
+          "explanation": "USB-C audio supported"
+        },
+        {
+          "quote": "An original invoice is unnecessary when claiming the standard India manufacturer warranty for ClearTrail Plus",
+          "start_char": 1839,
+          "end_char": 1948,
+          "label": "contradicted",
+          "evidence_fact_ids": [
+            "cleartrail.plus.warranty_invoice_required"
+          ],
+          "explanation": "catalogue says invoice required"
+        },
+        {
+          "quote": "remains 20 hours without any reduction for louder playback",
+          "start_char": 2139,
+          "end_char": 2197,
+          "label": "contradicted",
+          "evidence_fact_ids": [
+            "cleartrail.plus.battery_100_percent"
+          ],
+          "explanation": "20h only at 50% volume"
         }
       ]
     }
