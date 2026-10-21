@@ -25,7 +25,7 @@ DEFAULT_MODEL = "openai/gpt-oss-120b"
 GROQ_BASE_URL = "https://api.groq.com/openai/v1"
 
 DEFAULT_API_ATTEMPTS = 3
-MAX_RETRY_DELAY_SECONDS = 20
+MAX_RETRY_DELAY_SECONDS = 90
 MAX_FACT_RESULT_CHARS = 6000
 
 
@@ -379,6 +379,33 @@ class Agent:
     # Prediction validation
     # ---------------------------------------------------------
 
+    @staticmethod
+    def _find_quote_span(answer_text: str, quote: str) -> tuple[int, int] | None:
+        """Find exact text, or tolerate dash Unicode variants only.
+
+        The caller stores the exact source slice, preserving source offsets.
+        """
+        exact_start = answer_text.find(quote)
+        if exact_start >= 0:
+            return exact_start, exact_start + len(quote)
+
+        dash_variants = {
+            "\u2010", "\u2011", "\u2012", "\u2013",
+            "\u2014", "\u2212", "\ufe63", "\uff0d",
+        }
+
+        def normalize_dash(char: str) -> str:
+            return "-" if char in dash_variants else char
+
+        normalized_answer = "".join(normalize_dash(char) for char in answer_text)
+        normalized_quote = "".join(normalize_dash(char) for char in quote)
+        normalized_start = normalized_answer.find(normalized_quote)
+
+        if normalized_start < 0:
+            return None
+
+        return normalized_start, normalized_start + len(normalized_quote)
+
     def _build_prediction(
         self,
         payload: dict[str, Any],
@@ -404,14 +431,19 @@ class Agent:
                     f"Claim at index {index} needs a non-empty quote."
                 )
 
-            # Quotes must match the source exactly.
-            start = answer_text.find(quote)
+            # Prefer exact matching. If only dash Unicode differs, replace
+            # the model quote with the exact source slice before storing it.
+            quote_span = self._find_quote_span(answer_text, quote)
 
-            if start < 0:
+            if quote_span is None:
                 raise ValueError(
-                    "Claim quote is not an exact substring of the answer: "
+                    "Claim quote is not an exact substring of the answer "
+                    "(even after dash-only matching): "
                     f"{quote!r}"
                 )
+
+            start, end = quote_span
+            quote = answer_text[start:end]
 
             if label not in {
                 "supported",
@@ -667,9 +699,10 @@ class Agent:
                     "content": (
                         "Your previous final JSON was cut off. Regenerate the "
                         "ENTIRE JSON object from the beginning. Keep every "
-                        "required claim and exact quote, but make each "
-                        "explanation a short phrase. Do not omit required "
-                        "fields, invent evidence IDs, or add markdown."
+                        "required claims and quotes copied from ANSWER. "
+                        "Keep each explanation a short phrase. Copy quote text "
+                        "verbatim, including punctuation and Unicode characters. "
+                        "Do not invent evidence IDs or add markdown."
                     ),
                 }
             )
